@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase';
+import { connect } from 'react-redux';
+import { CampusActions } from '../store/action/campusaction';
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -7,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
-import '../firebase/firebaseconfig';
+
 
 const ranges = [
   {
@@ -20,11 +21,33 @@ const ranges = [
   }
 ];
 
+const ranges1 = [
+  {
+    value: 'BSCS',
+    label: 'BSCS',
+  },
+  {
+    value: 'BBA',
+    label: 'BBA',
+  },
+  {
+    value: 'BME',
+    label: 'BME',
+  },
+  {
+    value: 'BEE',
+    label: 'BEE',
+  },
+  {
+    value: 'BSSE',
+    label: 'BSSE',
+  }
+];
 
 
 class Studentregister extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       name: '',
       gender: '',
@@ -39,57 +62,30 @@ class Studentregister extends Component {
       uni: '',
       dept: '',
     };
-    this.ref = firebase.database().ref();
   }
 
   signup = () => {
 
-    let emal = this.state.email;
-    let pass = this.state.password;
+    let data = {
+      name : this.state.name,
+      gender: this.state.gender,
+      email: this.state.email,
+      pass: this.state.password,
+      contact: this.state.contact,
+      city: this.state.city,
+      address: this.state.address,
+      age: this.state.age,
+      school: this.state.school,
+      hsc: this.state.hsc,
+      uni: this.state.uni,
+      dept: this.state.dept,
+    }
+    this.props.studentsignup(data);
 
-    firebase.auth().createUserWithEmailAndPassword(emal, pass)
-      .then((res) => {
-        console.log(res);
-        if (res) {
-
-          this.ref.child('students').child(res.user.uid).set({
-            Name: this.state.name,
-            Gender: this.state.gender,
-            Email: this.state.email,
-            Password: this.state.password,
-            Contact: this.state.contact,
-            City: this.state.city,
-            Address: this.state.address,
-            Age: this.state.age,
-            School: this.state.school,
-            Hsc: this.state.hsc,
-            Uni: this.state.uni,
-            Dept: this.state.dept,
-            id:res.user.uid,
-          });
-
-          //localStorage.setItem("Students", JSON.stringify(res.students.uid));
-          this.props.history.push('/studenthome');
-
-        }
-      })
-      .catch((e) => {
-        console.log("error", e);
-        switch (e.code) {
-          case 'auth/weak-password':
-            alert(e.message)
-            break;
-          case 'auth/email-already-in-use':
-            alert(e.message)
-            break;
-          default: alert("Not Found")
-        }
-      })
   }
 
   handleChange = prop => event => {
     this.setState({ [prop]: event.target.value });
-    //this.setState({ [event.target.id]: event.target.value });
   };
 
   handleChange1 = event => {
@@ -290,17 +286,22 @@ class Studentregister extends Component {
           </Grid>
 
           <Grid item xs={4}>
-            <TextField
+          <TextField
+              select
+              className={classes.textboxes}
+              variant="outlined"
               id="dept"
               label="Department"
-              className={classes.textboxes}
-              type="text"
-              name="dept"
-              autoComplete="dept"
-              margin="normal"
-              variant="outlined"
-              onChange={this.handleChange1}
-            />
+              value={this.state.dept}
+              onChange={this.handleChange('dept')}
+
+            >
+              {ranges1.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>
@@ -350,4 +351,20 @@ const styles = theme => ({
   },
 
 });
-export default withStyles(styles)(Studentregister);
+
+const mapStateToProps = state => {
+  return {
+    errorstudentsignup: state.CampusReducer.errorstudentsignup,
+
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    studentsignup: (data) => dispatch(CampusActions.studentsignup(data))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Studentregister));
+

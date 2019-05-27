@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { CampusActions } from '../store/action/campusaction';
-
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,8 +8,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
+// import TextField from '@material-ui/core/TextField';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,28 +16,41 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 
-
 class StudentHome extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      id :'',
+      // id :'',
+      jobprofile:'',
     }
-
-
-  }
-  componentWillReceiveProps(nextProps) {
-    console.log('nextprops ...', nextProps);
   }
 
-  componentWillMount() {
-    this.props.studentdata()
-  }
 
+  componentDidMount(){
+    this.props.vacancydata();
+  }
   handleChange1 = event => {
     this.setState({ [event.target.id]: event.target.value });
   };
+
+  signout = () => {
+    this.props.signout()
+  }
+
+  // search = () => {
+
+  //   if(this.state.jobprofile)
+  //   {
+  //     let data = {
+  //       jobprofile : this.state.jobprofile,
+  //     }
+  //     this.props.filtercompanydata(data);
+  //   }
+  //   else{
+  //     alert('Please fill the field!');
+  //   }
+  // };
 
   render() {
     const { classes } = this.props;
@@ -59,9 +70,9 @@ class StudentHome extends Component {
             <Button color="inherit">
               <Link to="/findcompanies" className={classes.navLinks}>Find Companies</Link>
             </Button>
-            <Button color="inherit">
-              <Link to="/" className={classes.navLinks}>Logout</Link>
-            </Button>
+            <Button color="inherit" onClick={this.signout}>
+                Logout
+              </Button>
           </Toolbar>
         </AppBar>
 
@@ -69,8 +80,8 @@ class StudentHome extends Component {
         <Typography className={classes.studenttext}>View Job's Vacancies</Typography>
 
         {/* Filter data of jobprofile and salary */}
-        <Grid container spacing={24}>
-          <Grid item xs={2}></Grid>
+        {/* <Grid container spacing={24}>
+          <Grid item xs={3}></Grid>
           <Grid item xs={4}>
             <TextField
               id="jobprofile"
@@ -86,32 +97,15 @@ class StudentHome extends Component {
 
           </Grid>
 
-          <Grid item xs={4}>
-            <TextField
-              id="salary"
-              label="Salary"
-              className={classes.textboxes}
-              type="number"
-              name="salary"
-              autoComplete="salary"
-              margin="normal"
-              variant="outlined"
-              onChange={this.handleChange1}
-            />
-          </Grid>
-          <Grid item xs={2}></Grid>
-        </Grid>
-
-
-        <Grid container spacing={24}>
-          <Grid item xs={2}></Grid>
-          <Grid item xs={8}>
-            <Button variant="contained" color="primary" className={classes.textboxes} onClick={this.signin}>
+          <Grid item xs={2}>
+          <Button variant="contained" color="primary" className={classes.textboxes} onClick={this.search}>
               Search
             </Button>
           </Grid>
-          <Grid item xs={2}></Grid>
-        </Grid>
+          <Grid item xs={3}></Grid>
+        </Grid> */}
+
+
         
         {/* Showing Data related to job profile and salary */}
         <Grid container spacing={24}>
@@ -129,21 +123,21 @@ class StudentHome extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.props.data ? this.props.data.map(value => {
-                  // console.log(value);
+                {this.props.vacancydataredux ? this.props.vacancydataredux.map(value => {
                   return (
 
                     <TableRow key={value.id}>
                       <TableCell component="th" scope="row">
-                        {value.Name}
+                        {value.CompanyName}
                       </TableCell>
-                      <TableCell >{value.Email}</TableCell>
-                      <TableCell>{value.Age}</TableCell>
-                      <TableCell>{value.Contact}</TableCell>
-                      <TableCell>{value.Gender}</TableCell>
+                      <TableCell >{value.JobProfile}</TableCell>
+                      <TableCell>{value.Salary}</TableCell>
+                      <TableCell>{value.Criteria}</TableCell>
+                      <TableCell>{value.Bond}</TableCell>
+                      <TableCell>{value.Email}</TableCell>
                     </TableRow>
                   );
-                }) : "No Data to Show"}
+                }) : null}
 
               </TableBody>
             </Table>
@@ -184,32 +178,23 @@ const styles = theme => ({
   textboxes: {
     width: '100%',
     margin: '20px 0px 0px 0px',
-  },
-  table: {
-    // minWidth: 700,
-    // margin: '40px 0px 0px 0px',
-  },
-  tableText: {
-    // margin: '30px 0px 0px 0px',
+    height: '55px',
+
   },
 });
 
 const mapStateToProps = state => {
-  // console.log(state.CampusReducer.studentdata1)
   return {
-
-    data: state.CampusReducer.data,
-    companydata1: state.CampusReducer.companydata,
-    vacancydata1: state.CampusReducer.vacancydata
+    filtercompanydataredux: state.CampusReducer.filtercompanydataredux,
+    vacancydataredux: state.CampusReducer.vacancydataredux,
   }
 
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    studentdata: () => dispatch(CampusActions.studentdata()),
-    companydata: () => dispatch(CampusActions.companydata()),
-    vacancydata: () => dispatch(CampusActions.vacancydata()),
+    signout: () =>  dispatch(CampusActions.signout()) ,
+    vacancydata: () => dispatch(CampusActions.vacancydata())
   }
 }
 

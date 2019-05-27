@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { CampusActions } from '../store/action/campusaction';
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -10,14 +12,22 @@ class Student extends Component {
   constructor(){
     super();
     this.state = {
-      // email : email,
-      // password : password
+      email : '',
+      password : '',
     }
   }
 
   
-  handleChange1 = () => {
-    
+  handleChange1 = event => {
+    this.setState({ [event.target.id]: event.target.value });
+  };
+
+  signin = () => {
+    let data = {
+      email : this.state.email,
+      pass: this.state.password
+    }
+    this.props.studentsignin(data);
   }
   render() {
     const { classes } = this.props;
@@ -49,7 +59,7 @@ class Student extends Component {
         />
         <br />
         <Button variant="contained" color="primary" className={classes.textboxes} onClick={this.signin}>
-        <Link to="/studenthome" className={classes.navLinks}>Login</Link>
+        Login
       </Button>
       <Typography className={classes.LoginText}> Not an account?
       <Link to="/studentregister" className={classes.navLinks1}>Register Now!</Link>
@@ -74,7 +84,6 @@ const styles = createMuiTheme => ({
     textAlign: 'center',
     fontSize: '25px',
     margin: '50px 0px 30px 0px',
-    // color: '#006064',
   },
   typography: {
     useNextVariants: true,
@@ -82,7 +91,6 @@ const styles = createMuiTheme => ({
   navLinks1: {
     textDecoration: 'none',
     textAlign: 'center',
-    // color : 'white',
   },
   navLinks: {
     textDecoration: 'none',
@@ -92,11 +100,26 @@ const styles = createMuiTheme => ({
   LoginText: {
     margin: '15px 0px 0px 0px',
     textAlign: 'center',
-    // color: '#006064',
   },
 
 
 
 });
 
-export default withStyles(styles)(Student);
+
+const mapStateToProps = state => {
+  return {
+    errorstudentsignin: state.CampusReducer.errorstudentsignin,
+
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    studentsignin: (data) => dispatch(CampusActions.studentsignin(data))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Student));
+

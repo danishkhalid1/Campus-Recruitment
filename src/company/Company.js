@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase';
+import { connect } from 'react-redux';
+import { CampusActions } from '../store/action/campusaction';
 import { Link } from "react-router-dom";
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import '../firebase/firebaseconfig';
-
 
 class Company extends Component {
   constructor() {
@@ -15,52 +14,18 @@ class Company extends Component {
     this.state = {
       email: '',
       password: '',
-      // data: []
     };
-    this.ref = firebase.database().ref();
+
   }
 
     signin = () => {
-    let email = this.state.email;
-    let pass = this.state.password;
 
-    firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then((res) => {
-          console.log(res);
-          
-          // firebase.database().ref("users/"+res.user.uid)      
-          // .once((res) => {
-
-          //   if (res) {
-               
-          //     this.ref.child('Donors').child(res.user.uid).set({
-          //         username: this.state.username,
-          //         number: this.state.number,
-          //         bloodgroup : this.state.bloodgroup
-          //       });
-    
-          //     localStorage.setItem("User", JSON.stringify(res.user.uid));
-          //     this.props.history.push('/donors'); 
-              
-          //   }
-          // })
-
-            // localStorage.setItem("user", JSON.stringify(res.user.uid));
-             this.props.history.push('/donors');            
-          
-        })
-        .catch((e) => {
-            console.log(e);
-            switch (e.code) {
-                case "auth/wrong-password": // wrong password on sign in
-                    alert(e.message)
-                    break;
-                case "auth/user-not-found": // user not found on sign in on wrong email
-                    alert(e.message)
-                    break;
-                default: alert("Not Found")
-            }
-        })
+    let data = {
+      email : this.state.email,
+      pass : this.state.password,
+      // companysignin : this.props.companysignin,
+    }
+    this.props.companysignin(data);
 }
 
 
@@ -125,7 +90,6 @@ const styles = createMuiTheme => ({
     textAlign: 'center',
     fontSize: '25px',
     margin: '50px 0px 30px 0px',
-    // color: '#006064',
   },
   typography: {
     useNextVariants: true,
@@ -133,16 +97,29 @@ const styles = createMuiTheme => ({
   navLinks: {
     textDecoration: 'none',
     textAlign: 'center',
-    // color: '#006064',
   },
   LoginText: {
     margin: '15px 0px 0px 0px',
     textAlign: 'center',
-    // color: '#006064',
   },
 
 
 
 });
 
-export default withStyles(styles)(Company);
+const mapStateToProps = state => {
+  return {
+    errorcompanysignin: state.CampusReducer.errorcompanysignin,
+    // companysignin: state.CampusReducer.companysignin,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    companysignin: (data) => dispatch(CampusActions.companysignin(data))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Company));
+

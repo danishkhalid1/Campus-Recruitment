@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { CampusActions } from '../store/action/campusaction';
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -12,8 +13,40 @@ import TextField from '@material-ui/core/TextField';
 
 class CompanyPostNewVacancy extends Component {
 
+  constructor(props){
+    super(props);
+    this.state = {
+      companyname:'',
+      jobprofile:'',
+      email:'',
+      criteria:'',
+      salary:'',
+      bond:'',
+    }
+  }
+  
+  signout = () => {
+    this.props.signout()
+  }
 
+  handleChange1 = (event) => {
+    this.setState({[event.target.id] : [event.target.value]});
+  }
+
+  postjob = () => {
+    let data = {
+      compname : this.state.companyname,
+      jobprofile: this.state.jobprofile,
+      email: this.state.email,
+      criteria: this.state.criteria,
+      salary: this.state.salary,
+      bond: this.state.bond,
+    }
+    this.props.postnewvacancy(data);
+    alert("Data Inserted!");
+  }
   render() {
+
     const { classes } = this.props;
     return (
       <div className={classes.root}>
@@ -29,8 +62,8 @@ class CompanyPostNewVacancy extends Component {
             <Button color="inherit">
               <Link to="/companypostnewvacancy" className={classes.navLinks}>Post New Vacancy</Link>
             </Button>
-            <Button color="inherit">
-              <Link to="/" className={classes.navLinks}>Logout</Link>
+            <Button color="inherit" onClick={this.signout}>
+              Logout
             </Button>
           </Toolbar>
         </AppBar>
@@ -108,7 +141,7 @@ class CompanyPostNewVacancy extends Component {
           <Grid item xs={4}>
             <TextField
               id="bond"
-              label="Bond (if reguired)"
+              label="Bond (Experience)"
               className={classes.textboxes}
               type="text"
               name="bond"
@@ -139,15 +172,12 @@ class CompanyPostNewVacancy extends Component {
         <Grid container spacing={24}>
           <Grid item xs={2}></Grid>
           <Grid item xs={8}>
-            <Button variant="contained" color="primary" className={classes.textboxes} onClick={this.signin}>
+            <Button variant="contained" color="primary" className={classes.textboxes} onClick={this.postjob}>
               Post
             </Button>
           </Grid>
           <Grid item xs={2}></Grid>
         </Grid>
-
-
-
       </div>
     );
   }
@@ -184,5 +214,18 @@ const styles = theme => ({
 
 });
 
+const mapStateToProps = state => {
+  return {
+    postnewvacancydataredux: state.CampusReducer.postnewvacancydataredux,
+  }
+}
 
-export default withStyles(styles)(CompanyPostNewVacancy);
+const mapDispatchToProps = dispatch => {
+  return {
+    postnewvacancy: (data) => dispatch(CampusActions.postnewvacancy(data)),
+    signout: () => { dispatch(CampusActions.signout()) }
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(CompanyPostNewVacancy));

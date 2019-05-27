@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { CampusActions } from '../store/action/campusaction';
-
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -42,22 +40,15 @@ const ranges = [
 ];
 
 class CompanyHome extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       department: '',
-      hscaggregate:'',
-      sscaggregate:'',
-      collegeaggregate:'',
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log('nextprops ...', nextProps);
-  }
-
-  componentWillMount() {
-    this.props.studentdata()
+  signout = () => {
+    this.props.signout()
   }
 
   handleChange = prop => event => {
@@ -70,13 +61,16 @@ class CompanyHome extends Component {
 
   search = () => {
 
-  let data = {
-      dept : this.state.department,
-      ssc : this.state.sscaggregate,
-      hsc : this.state.hscaggregate,
-      colg : this.state.collegeaggregate
+    if(this.state.department)
+    {
+      let data = {
+        dept : this.state.department,
+      }
+      this.props.filterstudentdata(data);
     }
-    this.props.filterstudentdata(data);
+    else{
+      alert('Please fill the field!');
+    }
   };
 
   render() {
@@ -95,8 +89,8 @@ class CompanyHome extends Component {
             <Button color="inherit">
             <Link to="/companypostnewvacancy" className={classes.navLinks}>Post New Vacancy</Link>
             </Button>
-            <Button color="inherit">
-            <Link to="/" className={classes.navLinks}>Logout</Link>
+            <Button color="inherit" onClick={this.signout}>
+            Logout
             </Button>
           </Toolbar>
         </AppBar>
@@ -104,54 +98,7 @@ class CompanyHome extends Component {
         <Typography className={classes.studenttext}>Student Information</Typography>
 
         <Grid container spacing={24}>
-          <Grid item xs={2}></Grid>
-          <Grid item xs={4}>
-            <TextField
-              id="sscaggregate"
-              label="SSC Aggregate"
-              className={classes.textboxes}
-              type="text"
-              name="sscaggregate"
-              autoComplete="sscaggregate"
-              margin="normal"
-              variant="outlined"
-              onChange={this.handleChange1}
-            />
-
-          </Grid>
-
-          <Grid item xs={4}>
-            <TextField
-              id="hscaggregate"
-              label="HSC Aggregate"
-              className={classes.textboxes}
-              type="text"
-              name="hscaggregate"
-              autoComplete="hscaggregate"
-              margin="normal"
-              variant="outlined"
-              onChange={this.handleChange1}
-            />
-          </Grid>
-          <Grid item xs={2}></Grid>
-        </Grid>
-
-        <Grid container spacing={24}>
-          <Grid item xs={2}></Grid>
-          <Grid item xs={4}>
-            <TextField
-              id="collegeaggregate"
-              label="College Aggregate"
-              className={classes.textboxes}
-              type="text"
-              name="collegeaggregate"
-              autoComplete="collegeaggregate"
-              margin="normal"
-              variant="outlined"
-              onChange={this.handleChange1}
-            />
-
-          </Grid>
+          <Grid item xs={3}></Grid>         
 
           <Grid item xs={4}>
             <TextField
@@ -171,22 +118,18 @@ class CompanyHome extends Component {
               ))}
             </TextField>
           </Grid>
-          <Grid item xs={2}></Grid>
-        </Grid>
-
-        <Grid container spacing={24}>
-          <Grid item xs={2}></Grid>
-          <Grid item xs={8}>
+          <Grid item xs={2}>
             <Button variant="contained" color="primary" className={classes.textboxes} onClick={this.search}>
               Search
             </Button>
           </Grid>
-          <Grid item xs={2}></Grid>
+          <Grid item xs={3}></Grid>
         </Grid>
 
+
         <Grid container spacing={24}>
-          <Grid item xs={1}></Grid>
-          <Grid item xs={8}>
+          {/* <Grid item xs={}></Grid> */}
+          <Grid item xs={12}>
             <Table className={classes.table}>
               <TableHead>
                 <TableRow className={classes.tableText}>
@@ -195,10 +138,16 @@ class CompanyHome extends Component {
                   <TableCell>College</TableCell>
                   <TableCell>Number</TableCell>
                   <TableCell>Gender</TableCell>
+                  <TableCell>University</TableCell>
+                  <TableCell>Department</TableCell>
+                  <TableCell>City</TableCell>
+                  <TableCell>Age</TableCell>
+                  <TableCell>Address</TableCell>
+
                 </TableRow>
               </TableHead>
               <TableBody>
-              {this.props.data ? this.props.data.map(value => {
+              {this.props.filterstudentdataredux ? this.props.filterstudentdataredux.map(value => {
             return (
               <TableRow key={value.id}>
                 <TableCell component="th" scope="row">
@@ -208,15 +157,20 @@ class CompanyHome extends Component {
                 <TableCell>{value.Hsc}</TableCell>
                 <TableCell>{value.Contact}</TableCell>
                 <TableCell>{value.Gender}</TableCell>
+                <TableCell>{value.Uni}</TableCell>
+                <TableCell>{value.Dept}</TableCell>
+                <TableCell>{value.City}</TableCell>
+                <TableCell>{value.Age}</TableCell>
+                <TableCell>{value.Address}</TableCell>
+
               </TableRow>
               );
-              }) : "No Data to Show"}
+              }): null}
 
         </TableBody>
             </Table>
 
           </Grid>
-          <Grid item xs={1}></Grid>
         </Grid>
 
       </div>
@@ -250,28 +204,23 @@ const styles = theme => ({
   },
   textboxes: {
     width: '100%',
-    margin: '20px 0px 0px 0px',
-  },
-  table: {
-    // minWidth: 700,
-    // margin: '40px 0px 0px 0px',
-  },
-  tableText: {
-    // margin: '30px 0px 0px 0px',
+    height: '55px',
+    // margin: '20px 0px 0px 0px',
   },
 });
 
 const mapStateToProps = state => {
   return {
-    data: state.CampusReducer.data,
+    filterstudentdataredux: state.CampusReducer.filterstudentdataredux,
     
   }
 }
-
+ 
 const mapDispatchToProps = dispatch => {
   return {
-    studentdata: () => dispatch(CampusActions.studentdata()),
-    filterstudentdata: (data) => dispatch(CampusActions.filterstudentdata(data))
+    filterstudentdata: (data) => dispatch(CampusActions.filterstudentdata(data)),
+    signout: () => { dispatch(CampusActions.signout()) }
+
   }
 }
 

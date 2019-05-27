@@ -7,20 +7,21 @@ import CompanyPostNewVacancy from './company/CompanyPostNewVacancy';
 import Studentregister from './student/studentregister';
 import FindCompanies from './student/FindCompanies';
 import Home from './Home';
-import Admin from './admin/Admin';
+import AdminHome from './admin/AdminHome';
+import AdminSignin from './admin/adminsignin';
 import Company from './company/Company';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Router, Route } from "react-router-dom";
+import history from './history';
 
 class Main extends Component {
-// #80deea Main color
-// #006064 Text color
 
     render() {        
         return (
-            <Router>
+            <Router history={history}>
             <div>
                     <Route exact path="/" component={Home} />
                     <Route exact path="/student" component={Student} />
+                    {/* <Route exact path="/adminsignin" component={AdminSignin} /> */}
                     <Route exact path="/studentregister" component={Studentregister} />
                     <Route exact path="/studenthome" component={StudentHome} />
                     <Route exact path="/findcompanies" component={FindCompanies} />
@@ -28,7 +29,9 @@ class Main extends Component {
                     <Route exact path="/company" component={Company} />
                     <Route exact path="/companyhome" component={CompanyHome} />
                     <Route exact path="/companypostnewvacancy" component={CompanyPostNewVacancy} />
-                    <Route exact path="/admin" component={Admin} />
+                    <Route exact path="/admin" component={AdminHome} />
+                    <Route exact path="/adminsignin" component={AdminSignin} />
+
             </div>
         </Router>
         

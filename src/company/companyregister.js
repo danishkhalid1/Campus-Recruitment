@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase';
+import { connect } from 'react-redux';
+import { CampusActions } from '../store/action/campusaction';
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import '../firebase/firebaseconfig';
 
 
 class Companyregister extends Component {
@@ -18,44 +18,21 @@ class Companyregister extends Component {
       contact:'',
       establish:''
     };
-    this.ref = firebase.database().ref();
+
   }
 
   signup = () => {
 
-    let emal = this.state.email;
-    let pass = this.state.password;
+    let data = {
+      email : this.state.email,
+      pass : this.state.password,
+      companyname: this.state.companyname,
+      contact: this.state.contact,
+      establish: this.state.establish,
+    }
 
-    firebase.auth().createUserWithEmailAndPassword(emal, pass)
-      .then((res) => {
-        console.log(res);
-        if (res) {
+    this.props.companysignup(data);
 
-          this.ref.child('Company').child(res.user.uid).set({
-            Name: this.state.companyname,
-            Email: this.state.email,
-            Password: this.state.password,
-            Contact: this.state.contact,
-            Establish: this.state.establish,
-          });
-
-          //localStorage.setItem("Students", JSON.stringify(res.students.uid));
-          this.props.history.push('/companyhome');
-
-        }
-      })
-      .catch((e) => {
-        console.log("error", e);
-        switch (e.code) {
-          case 'auth/weak-password':
-            alert(e.message)
-            break;
-          case 'auth/email-already-in-use':
-            alert(e.message)
-            break;
-          default: alert("Not Found")
-        }
-      })
   }
 
   handleChange1 = event => {
@@ -153,7 +130,6 @@ const styles = createMuiTheme => ({
     textAlign: 'center',
     fontSize: '25px',
     margin: '50px 0px 30px 0px',
-    // color: '#006064',
   },
   typography: {
     useNextVariants: true,
@@ -161,16 +137,29 @@ const styles = createMuiTheme => ({
   navLinks: {
     textDecoration: 'none',
     textAlign: 'center',
-    // color: '#006064',
   },
   LoginText: {
     margin: '15px 0px 0px 0px',
     textAlign: 'center',
-    // color: '#006064',
   },
 
 
 
 });
 
-export default withStyles(styles)(Companyregister);
+const mapStateToProps = state => {
+  return {
+    errorcompanysignup: state.CampusReducer.errorcompanysignup,
+
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    companysignup: (data) => dispatch(CampusActions.companysignup(data))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Companyregister));
+

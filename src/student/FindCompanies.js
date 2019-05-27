@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { CampusActions } from '../store/action/campusaction';
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -7,19 +8,25 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import '../firebase/firebaseconfig';
 
 class FindCompanies extends Component {
 
 
+  componentWillMount() {
+    this.props.companydata();
+  }
+
+  signout = () => {
+    this.props.signout()
+  }
+  
   render() {
+
     const { classes } = this.props;
     return (
       <div className={classes.root}>
@@ -29,15 +36,15 @@ class FindCompanies extends Component {
               Campus Recruitment System
           </Typography>
 
-          <Button color="inherit">
-            <Link to="/studenthome" className={classes.navLinks}>Vacancy</Link>
+            <Button color="inherit">
+              <Link to="/studenthome" className={classes.navLinks}>Vacancy</Link>
             </Button>
             <Button color="inherit">
-            <Link to="/findcompanies" className={classes.navLinks}>Find Companies</Link>
+              <Link to="/findcompanies" className={classes.navLinks}>Find Companies</Link>
             </Button>
-            <Button color="inherit">
-            <Link to="/" className={classes.navLinks}>Logout</Link>
-            </Button>
+            <Button color="inherit" onClick={this.signout}>
+              Logout
+              </Button>
           </Toolbar>
         </AppBar>
 
@@ -50,26 +57,25 @@ class FindCompanies extends Component {
               <TableHead>
                 <TableRow className={classes.tableText}>
                   <TableCell>Company Name</TableCell>
-                  <TableCell>Company HR</TableCell>
+                  <TableCell>Company Establish</TableCell>
                   <TableCell>Company Contact</TableCell>
                   <TableCell>Company Email</TableCell>
                 </TableRow>
               </TableHead>
-              {/* <TableBody>
-          {this.state.data.map(value => {
-            return (
-              <TableRow key={value.id}>
-                <TableCell component="th" scope="row">
-                  {value.username}
-                </TableCell>
-                <TableCell >{value.email}</TableCell>
-                <TableCell>{value.bloodgroup}</TableCell>
-                <TableCell>{value.number}</TableCell>
-                <TableCell>{value.gender}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody> */}
+              <TableBody>
+                {this.props.companydataredux ? this.props.companydataredux.map(value => {
+                  return (
+                    <TableRow key={value.Id}>
+                      <TableCell component="th" scope="row">
+                        {value.Name}
+                      </TableCell>
+                      <TableCell >{value.Establish}</TableCell>
+                      <TableCell>{value.Contact}</TableCell>
+                      <TableCell>{value.Email}</TableCell>
+                    </TableRow>
+                  );
+                }) : null}
+              </TableBody>
             </Table>
 
           </Grid>
@@ -88,7 +94,7 @@ const styles = theme => ({
   navLinks: {
     textDecoration: 'none',
     textAlign: 'center',
-     color: 'white',
+    color: 'white',
   },
   margin: {
     margin: theme.spacing.unit,
@@ -109,14 +115,24 @@ const styles = theme => ({
     width: '100%',
     margin: '20px 0px 0px 0px',
   },
-  table: {
-    // minWidth: 700,
-    // margin: '40px 0px 0px 0px',
-  },
-  tableText: {
-    // margin: '30px 0px 0px 0px',
-  },
+
 });
 
+const mapStateToProps = state => {
+  return {
 
-export default withStyles(styles)(FindCompanies);
+    companydataredux: state.CampusReducer.companydataredux,
+  }
+
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    companydata: () => dispatch(CampusActions.companydata()),
+    signout: () => { dispatch(CampusActions.signout()) }
+
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FindCompanies));
